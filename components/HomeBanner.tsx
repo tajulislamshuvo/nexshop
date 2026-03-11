@@ -1,8 +1,8 @@
 import React from 'react'
-import Title from './Text'
 import Link from 'next/link'
 import Image from 'next/image'
 import banner1 from "../images/banner/banner1.png"
+import { Title } from './Text'
 
 const HomeBanner = () => {
   return (

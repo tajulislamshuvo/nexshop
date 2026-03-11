@@ -33,7 +33,7 @@ const data: ContactItemData[] = [
   },
   {
     title: "Email Us",
-    subtitle:"Shopcart@gmail.com",
+    subtitle:"nexshop@gmail.com",
     icon: (
       <Mail className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors" />
     ),
@@ -48,7 +48,7 @@ const FooterTop = () => {
           {item.icon}
           <div >
             <h3 className='font-semibold text-gray-900 group-hover:text-black'>{item?.title}</h3>
-            <p>{item?.subtitle}</p>
+            <p className='text-gray-600 text-sm mt-1 group-hover:text-gray-900'>{item?.subtitle}</p>
           </div>
         </div>
       ))}
