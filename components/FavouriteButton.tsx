@@ -1,7 +1,11 @@
+import { Product } from '@/sanity.types'
 import { Heart } from 'lucide-react'
 import React from 'react'
 
-const FavouriteButton = () => {
+const FavouriteButton = ({showProduct = false, product}: {
+  showProduct: boolean;
+  product: Product | undefined | null
+}) => {
   return (
     <div className='relative group'>
       <Heart className='w-5 h-5'/>

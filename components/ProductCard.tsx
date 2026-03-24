@@ -15,6 +15,7 @@ const ProductCard = ({product}: {product: Product}) => {
     <div className='border border-[1px] border-dark_blue/20 rounded-md bg-white group'>
       <div className='relative group overflow-hidden bg-shop_light_bg'>
         {product?.images && (
+         <Link href={`/product/${product?.slug?.current}`}>
           <Image
            src={urlFor(product?.images[0]).url()} 
            alt="ProductImage" 
@@ -25,6 +26,7 @@ const ProductCard = ({product}: {product: Product}) => {
            >
             
           </Image>
+         </Link>
         )}
 
         <AddToWishListButton product={product}></AddToWishListButton>
