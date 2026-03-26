@@ -19,4 +19,8 @@ const LATEST_BLOG_QUERY = defineQuery(`*[_type == "blog" && isLatest == true] | 
     `*[_type == "product" && slug.current == $slug] | order(name asc) [0]`
   )
  
-export {BRAND_QUERY, LATEST_BLOG_QUERY, DEAL_PRODUCTS, PRODUCT_BY_SLUG_QUERY}
+  const BRAND_QUERY1 = defineQuery(`*[_type == "product" && slug.current == $slug]{
+    "brandName": brand->title
+    } `)
+
+export {BRAND_QUERY, LATEST_BLOG_QUERY, DEAL_PRODUCTS, PRODUCT_BY_SLUG_QUERY, BRAND_QUERY1}

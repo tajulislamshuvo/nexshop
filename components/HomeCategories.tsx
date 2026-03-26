@@ -29,7 +29,7 @@ const HomeCategories = ({categories}:{categories:Category[]}) => {
           <div className='space-y-1'>
             <Link href={`/category/${category?.slug?.current}` } className='hover:underline hoverEffect'><h3 className='text-base font-semibold'>{category?.title}</h3></Link>
             
-            <p className='text-sm'><span className='font-bold text-shop_dark_green'>{`(${category?.productCount})`}</span> items available</p>
+            <p className='text-sm'><span className='font-bold text-shop_dark_green'>{`(${category?.productCount} )`}</span> items available</p>
           </div>
 
         </div>)}
