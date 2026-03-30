@@ -383,6 +383,7 @@ export type Category = {
   slug?: Slug;
   description?: string;
   range?: number;
+  productCount?:number;
   featured?: boolean;
   image?: {
     asset?: SanityImageAssetReference;

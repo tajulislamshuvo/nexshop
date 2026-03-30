@@ -43,7 +43,7 @@ const ShopByBrands = async() => {
       </div>
       <div className='grid grid-cols-2 md:grid-cols-4 gap-5 lg:grid-cols-8'>
         {brands?.map((brand) =>(
-          <Link href={`/brand/${brand?.slug?.current}`} key={brand?._id} className='bg-white w-36 h-24 flex items-center justify-center rounded-md overflow-hidden hover:shadow-lg shadow-shop_dark_green/20 hoverEffect '>
+          <Link href={{pathname: "/shop", query:{brand: brand?.slug?.current}}} key={brand?._id} className='bg-white w-36 h-24 flex items-center justify-center rounded-md overflow-hidden hover:shadow-lg shadow-shop_dark_green/20 hoverEffect '>
             {brand?.image &&(
               <Image
             src={urlFor(brand?.image).url()}

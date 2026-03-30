@@ -17,7 +17,7 @@ const priceArray = [
 const PriceList = ({selectedPrice ,setSelectedPrice}: Props) => {
   return (
             <div className='w-full bg-white p-5'>
-      <Title className='text-md md:text-lg tracking-wide'>Brands</Title>
+      <Title className='text-md md:text-lg tracking-wide'>Prices</Title>
       <RadioGroup  className='mt-2 space-y-1' value={selectedPrice}>
         {priceArray.map((price, index) => (
             <div onClick={() =>setSelectedPrice(price?.value)} className="flex items-center gap-3 cursor-pointer" key={index} >
