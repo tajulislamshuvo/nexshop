@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import useStore from '@/store';
 import toast from 'react-hot-toast';
 import PriceFormatter from './PriceFormatter';
+import QuantityButtons from './QuantityButtons';
 interface Props{
   product: Product;
   className?:string;
@@ -26,14 +27,14 @@ const AddToCartButton = ({product, className}: Props) => {
   }
   return (
     
-      <div>
+      <div className='w-full'>
 
         {
           itemCount ? (
             <div>
-                <div className="">
+                <div className="flex justify-between items-center">
                   <span className='text-sm text-darkColor/80'>Quantuty</span>
-                  buttons
+                  <QuantityButtons product={product}></QuantityButtons>
                 </div>
                 <div className='flex items-center justify-between border-t pt-1'>
                   <span className='text-sm font-semibold'>Subtotal</span>

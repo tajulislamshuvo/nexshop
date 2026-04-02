@@ -11,10 +11,15 @@ import { FiCornerDownLeft, FiShare2 } from "react-icons/fi";
 import { RxBorderSplit } from "react-icons/rx";
 import { TbTruckDelivery } from "react-icons/tb";
 import React from 'react'
+import { notFound } from 'next/navigation';
 
 const SingleProductPage = async({params} : {params:Promise<{slug:string}>}) => {
   const {slug} = await params;
   const product = await getProductBySlug(slug);
+
+  if(!product){
+    return notFound()
+  }
   return (
     <div>
       <Container className='flex flex-col md:flex-row md:justify-between gap-10 py-10'>
