@@ -27,7 +27,7 @@ const AddToWishListButton = ({product, className} : {product: Product; className
   }
   return (
     <div className={cn("absolute top-2 right-2 ", className)}>
-      <div onClick={handleFavourite} className={`p-2.5 rounded-full hover:bg-shop_dark_green hover:text-white hover:bg-shop_dark_green/80 hoverEffect ${existingProduct ? "bg-shop_dark_green/80 text-white" : "bg-darkColor/10"}`}>
+      <div onClick={handleFavourite} className={`p-2.5 rounded-full hover:text-white hover:bg-shop_dark_green/80 hoverEffect ${existingProduct ? "bg-shop_dark_green/80 text-white" : "bg-darkColor/10"}`}>
         <Heart size={15}></Heart>
       </div>
     </div>

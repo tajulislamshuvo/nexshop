@@ -7,16 +7,20 @@ import PriceFormatter from '@/components/PriceFormatter';
 import QuantityButtons from '@/components/QuantityButtons';
 import { Title } from '@/components/Text';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Address } from '@/sanity.types';
+import { client } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
 import useStore from '@/store';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { ShoppingBag, Trash } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 const CartPage = () => {
@@ -34,6 +38,30 @@ const CartPage = () => {
   const { user } = useUser();
   const [addresses, setAddresses] = useState<Address[] | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+
+  const fetchAddresses = async() =>{
+    setLoading(true)
+      try {
+        const query = `*[_type=="address"] | order(publishedAt desc)`;
+        const data = await client.fetch(query);
+        setAddresses(data);
+
+        const defaultAddresses= data.find((addr: Address)=> addr.default);
+        if(defaultAddresses){
+          setSelectedAddress(defaultAddresses)
+        }else{
+          setSelectedAddress(data[0]);
+        }
+      } catch (error) {
+        console.log("Address fetching error ", error)
+      }finally{
+           setLoading(false)
+      }
+  }
+
+  useEffect(() =>{
+    fetchAddresses()
+  }, [])
 
   function handleResetCart(){
     const confirmed = window.confirm("Are you sure, you want to reset your cart");
@@ -134,7 +162,7 @@ const CartPage = () => {
           <div className="lg:col-span-1">
             <div className="hidden md:inline-block w-full bg-white p-6 rounded-lg border">
               <h2 className='text-xl font-semibold mb-4'>Order Summery</h2>
-              <div>
+              <div className='space-y-3'>
                 <div className='flex items-center justify-between'>
                   <span>SubTotal</span>
                   <PriceFormatter amount={getSubTotalPrice()}></PriceFormatter>
@@ -146,12 +174,41 @@ const CartPage = () => {
                   
                 </div>
                 <Separator></Separator>
-                <div className='flex items-center justify-between'>
+                <div className='flex items-center justify-between font-semibold text-lg'>
                   <span>Total</span>
                   <PriceFormatter amount={useStore?.getState().getTotalPrice()}></PriceFormatter>
                 </div>
+                <Button className='w-full rounded-full font-semibold hoverEffect tracking-wide' size={"lg"}>{loading ? "Please wait..." : "Proceed to Checkout"}</Button>
               </div>
             </div>
+
+            {
+              addresses && (
+                <div className=" mt-5">
+                  <Card className='rounded-md shadow-none'>
+                    <CardHeader>
+                      <CardTitle>Delivery Address</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <RadioGroup defaultValue={addresses?.find((addr)=> addr.default)?._id.toString()}>
+                        {
+                          addresses?.map((address) =>(
+                            <div key={address._id} onClick={() => setSelectedAddress(address)} className={`flex items-center space-x-2 mb-4 cursor-pointer ${selectedAddress?._id == address?._id && "text-shop_dark_green"}`}>
+                              <RadioGroupItem value={address._id.toString()}></RadioGroupItem>
+                              <Label htmlFor={`address-${address?._id}`} className='grid gap-1 flex-1'>
+                              <span className='font-semibold'>{address?.name}</span>
+                              <span className='text-sm text-black/60'>{address.address}, {address?.city}, {address?.state} {address?.zip}</span>
+                              </Label>
+                            </div>
+                          ))
+                        }
+                      </RadioGroup>
+                      <Button variant='outline' className='w-full mt-4'>Add New Address</Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              )
+            }
           </div>
         </div>
 
