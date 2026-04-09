@@ -10,6 +10,7 @@ import { urlFor } from '@/sanity/lib/image';
 import Image from 'next/image';
 import PriceFormatter from './PriceFormatter';
 import AddToCartButton from './AddToCartButton';
+import toast from 'react-hot-toast';
 
 const WishListProduct = () => {
   const [visibleProduct, setVisibleProduct] = useState(7);
@@ -18,6 +19,14 @@ const WishListProduct = () => {
     setVisibleProduct((prev)=> Math.min(prev + 5, favoriteProduct?.length))
   }
   console.log(favoriteProduct)
+
+  const handleResetWishlist = () =>{
+    const confirmReset = window.confirm("Are you sure you want to reset your wishlist?");
+    if(confirmReset){
+      resetFavorite();
+      toast.success("WishList reset successfullly")
+    }
+  }
   return (
     <Container>
       {favoriteProduct?.length > 0 ? (
@@ -85,11 +94,28 @@ const WishListProduct = () => {
           </tbody>
         </table>
         </div>
-        {
+        <div className="flex items-center gap-5">
+          {
           visibleProduct < favoriteProduct?.length &&(
             <div className="my-5">
               <Button variant="outline" onClick={loadMore}>Load more</Button>
             </div>
+          )
+        }
+        {
+          visibleProduct > 7  && (
+            <div className="my-5">
+              <Button variant="outline" onClick={() => setVisibleProduct(7)}>Load Less</Button>
+            </div>
+          )
+        }
+        </div>
+        {
+          favoriteProduct?.length > 0 && (
+            <Button
+            onClick={handleResetWishlist} className='mb-5 font-semibold'
+            size="lg"
+            >Reset Wishlist</Button>
           )
         }
         </>
