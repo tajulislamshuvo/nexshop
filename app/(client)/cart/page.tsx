@@ -1,4 +1,5 @@
 "use client"
+import { createCheckoutSession, Metadata } from '@/actions/createCheckoutSession';
 import Container from '@/components/Container';
 import EmptyCart from '@/components/EmptyCart';
 import FavouriteButton from '@/components/FavouriteButton';
@@ -70,6 +71,30 @@ const CartPage = () => {
       toast.success("Cart reset successfully")
     }
   }
+
+const handleCheckout = async() =>{
+  setLoading(true);
+  try {
+    const metadata: Metadata= {
+      orderNumber : crypto.randomUUID(),
+      customerName : user?.fullName ?? "Unknown",
+      customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
+      clerkUserId: user?.id,
+      address: selectedAddress 
+
+    }
+    const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
+    if(checkoutUrl){
+      window.location.href = checkoutUrl
+    }
+    console.log("Stripe checkout url------",checkoutUrl)
+  } catch (error) {
+    console.log("Error creating checkout session", error)
+  }finally{
+    setLoading(false);
+  }
+}
+
   return (
     <div className='bg-gray-50 '>
       {isSignedIn ? (
@@ -178,7 +203,10 @@ const CartPage = () => {
                   <span>Total</span>
                   <PriceFormatter amount={useStore?.getState().getTotalPrice()}></PriceFormatter>
                 </div>
-                <Button className='w-full rounded-full font-semibold hoverEffect tracking-wide' size={"lg"}>{loading ? "Please wait..." : "Proceed to Checkout"}</Button>
+                <Button className='w-full rounded-full font-semibold hoverEffect tracking-wide' size={"lg"}
+                 disabled={loading}
+                  onClick={handleCheckout}
+                  >{loading ? "Please wait..." : "Proceed to Checkout"}</Button>
               </div>
             </div>
 
@@ -215,7 +243,29 @@ const CartPage = () => {
         {/* order summery for mobile view */}
         <div className="md:hidden fixed bottom-0 left-0 w-full bg-white pt-2">
             <div className="bg-white p-4 rounded-lg border mx-4">
-              <h2>Order summery</h2>
+              <h2 className='mb-1 font-bold tracking-wide text-xl'>Order summery</h2>
+                            <div className='space-y-3'>
+                <div className='flex items-center justify-between'>
+                  <span>SubTotal</span>
+                  <PriceFormatter amount={getSubTotalPrice()}></PriceFormatter>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span>Discount</span>
+                  <PriceFormatter amount={getSubTotalPrice() - getTotalPrice()}></PriceFormatter>
+                  
+                  
+                </div>
+                <Separator></Separator>
+                <div className='flex items-center justify-between font-semibold text-lg'>
+                  <span>Total</span>
+                  <PriceFormatter amount={useStore?.getState().getTotalPrice()}></PriceFormatter>
+                </div>
+                <Button className='w-full rounded-full font-semibold hoverEffect tracking-wide' size={"lg"}
+                disabled={loading}
+                  onClick={handleCheckout}
+                >{loading ? "Please wait..." : "Proceed to Checkout"}</Button>
+              </div>
+
             </div>
         </div>
       </div>
