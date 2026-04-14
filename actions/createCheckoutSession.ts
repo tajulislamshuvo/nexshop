@@ -32,13 +32,21 @@ export async function createCheckoutSession(
       const customerId = customers?.data?.length >0 ? customers.data[0].id : "";
 
       const sessionPayload:Stripe.Checkout.SessionCreateParams = {
-        metadata:{
-        orderNumber:metadata.orderNumber,
-        customerName: metadata.customerName,
-        customerEmail: metadata.customerEmail,
-        clerkUserId: metadata.clerkUserId as string,
-        address: JSON.stringify(metadata.address)
-        },
+        metadata: {
+  orderNumber: metadata.orderNumber,
+  customerName: metadata.customerName,
+  customerEmail: metadata.customerEmail,
+  clerkUserId: metadata.clerkUserId || "",
+  address: JSON.stringify(metadata.address),
+
+  // 🔥 IMPORTANT: store products info
+  items: JSON.stringify(
+    items.map(item => ({
+      productId: item.product._id,
+      quantity: item.quantity
+    }))
+  )
+},
         mode:"payment",
         allow_promotion_codes: true,
         payment_method_types: ["card"],
@@ -58,7 +66,7 @@ export async function createCheckoutSession(
             images:
               item?.product?.images && item?.product?.images?.length > 0
                 ? [urlFor(item?.product?.images[0]).url()]
-                : undefined,
+                : [],
           },
         },
         quantity: item?.quantity,

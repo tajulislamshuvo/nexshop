@@ -1,171 +1,95 @@
-import { Metadata } from "@/actions/createCheckoutSession";
 import stripe from "@/lib/stripe";
 import { backendClient } from "@/sanity/lib/backendClient";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-export async function POST(req:NextResponse){
-const body = await req.text();
-const headerList = await headers();
-const sig = headerList.get("stripe-signature");
+export async function POST(req: NextRequest) {
+  const body = await req.text();
+  const sig = req.headers.get("stripe-signature");
 
-if(!sig){
-  return NextResponse.json({error: "No Signature found for stripe"}, {status:400})
-}
+  if (!sig) return NextResponse.json({ error: "Missing signature" }, { status: 400 });
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-if(!webhookSecret){
-  console.log("Stripe webhok secret is not set");
-  return NextResponse.json({
-    error:"Stripe webhok secret is not set"
-  }, {
-    status:400
-  })
-}
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) return NextResponse.json({ error: "Missing secret" }, { status: 400 });
 
-let event: Stripe.Event;
-try {
+  let event: Stripe.Event;
+
+  try {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-  } catch (error) {
-    console.error("Webhook signature verification failed:", error);
-    return NextResponse.json(
-      {
-        error: `Webhook Error: ${error}`,
-      },
-      { status: 400 }
-    );
+  } catch (err) {
+    console.error("Webhook signature error:", err);
+    return NextResponse.json({ error: "Invalid webhook" }, { status: 400 });
   }
 
-   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const invoice = session.invoice
-      ? await stripe.invoices.retrieve(session.invoice as string)
-      : null;
+  try {
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+
+      await createOrder(session);
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (err) {
+    console.error("WEBHOOK HANDLER ERROR:", err);
+    return NextResponse.json({ error: "Webhook failed" }, { status: 500 });
+  }
+}
+// ===========================
+// CREATE ORDER FUNCTION
+// ===========================
+type ParsedItem = {
+  productId: string;
+  quantity: number;
+};
+
+async function createOrder(session: Stripe.Checkout.Session) {
+  try {
+    const metadata = session.metadata;
+
+    if (!metadata?.items) {
+      console.log("❌ No items in metadata");
+      return;
+    }
+
+    let items: ParsedItem[] = [];
 
     try {
-      await createOrderInSanity(session, invoice);
-    } catch (error) {
-      console.error("Error creating order in sanity:", error);
-      return NextResponse.json(
-        {
-          error: `Error creating order: ${error}`,
-        },
-        { status: 400 }
-      );
+      items = JSON.parse(metadata.items);
+    } catch (err) {
+      console.log("❌ Invalid JSON in metadata.items", err);
+      return;
     }
-  }
-  return NextResponse.json({ received: true });
-    
-}
-async function createOrderInSanity(
-  session: Stripe.Checkout.Session,
-  invoice: Stripe.Invoice | null
-) {
-  const {
-    id,
-    amount_total,
-    currency,
-    metadata,
-    payment_intent,
-    total_details,
-  } = session;
 
+    if (!Array.isArray(items) || items.length === 0) {
+      console.log("❌ Empty items");
+      return;
+    }
 
-    const { orderNumber, customerName, customerEmail, clerkUserId, address } =
-    metadata as unknown as Metadata & { address: string };
+    const order = await backendClient.create({
+      _type: "order",
+      orderNumber: metadata.orderNumber || `order-${Date.now()}`,
+      stripeCheckoutSessionId: session.id,
+      stripePaymentIntentId: session.payment_intent,
+      stripeCustomerId: session.customer,
+      customerName: metadata.customerName || "Unknown",
+      email: metadata.customerEmail || "Unknown",
+      totalPrice: (session.amount_total || 0) / 100,
+      status: "paid",
+      paymentStatus: "paid",
+      orderDate: new Date().toISOString(),
 
-     const parsedAddress = address ? JSON.parse(address) : null;
-
-     const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(
-    id,
-    { expand: ["data.price.product"] }
-  );
-
-  // Create Sanity product references and prepare stock updates
-  const sanityProducts = [];
-  const stockUpdates = [];
-  for (const item of lineItemsWithProduct.data) {
-    const productId = (item.price?.product as Stripe.Product)?.metadata?.id;
-    const quantity = item?.quantity || 0;
-
-    if (!productId) continue;
-
-     sanityProducts.push({
-      _key: crypto.randomUUID(),
-      product: {
-        _type: "reference",
-        _ref: productId,
-      },
-      quantity,
+      products: items.map((i) => ({
+        _key: i.productId,
+        product: {
+          _type: "reference",
+          _ref: i.productId,
+        },
+        quantity: i.quantity,
+      })),
     });
 
-    stockUpdates.push({ productId, quantity });
+    console.log("✅ ORDER CREATED:", order._id);
+  } catch (err) {
+    console.error("CREATE ORDER FAILED:", err);
+  }
 }
-      //   Create order in Sanity
-      const order = await backendClient.create({
-    _type: "order",
-    orderNumber,
-    stripeCheckoutSessionId: id,
-    stripePaymentIntentId: payment_intent,
-    customerName,
-    stripeCustomerId: customerEmail,
-    clerkUserId: clerkUserId,
-    email: customerEmail,
-    currency,
-    amountDiscount: total_details?.amount_discount
-      ? total_details.amount_discount / 100
-      : 0,
-
-    products: sanityProducts,
-    totalPrice: amount_total ? amount_total / 100 : 0,
-    status: "paid",
-    orderDate: new Date().toISOString(),
-    invoice: invoice
-      ? {
-          id: invoice.id,
-          number: invoice.number,
-          hosted_invoice_url: invoice.hosted_invoice_url,
-        }
-      : null,
-    address: parsedAddress
-      ? {
-          state: parsedAddress.state,
-          zip: parsedAddress.zip,
-          city: parsedAddress.city,
-          address: parsedAddress.address,
-          name: parsedAddress.name,
-        }
-      : null,
-  });
-
-  // Update stock levels in Sanity
-
-  await updateStockLevels(stockUpdates);
-  return order;
-}
-
-  // update stock levels in sanity
-  async function updateStockLevels(
-  stockUpdates: { productId: string; quantity: number }[]
-) {
-  for (const { productId, quantity } of stockUpdates) {
-    try {
-      // Fetch current stock
-      const product = await backendClient.getDocument(productId);
-
-      if (!product || typeof product.stock !== "number") {
-        console.warn(
-          `Product with ID ${productId} not found or stock is invalid.`
-        );
-        continue;
-      }
-
-      const newStock = Math.max(product.stock - quantity, 0); // Ensure stock does not go negative
-
-      // Update stock in Sanity
-      await backendClient.patch(productId).set({ stock: newStock }).commit();
-    } catch (error) {
-      console.error(`Failed to update stock for product ${productId}:`, error);
-    }
-  }}
