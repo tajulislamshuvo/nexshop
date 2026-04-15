@@ -656,6 +656,122 @@ export type BRAND_QUERY1_RESULT = Array<{
   brandName: string | null;
 }>;
 
+// Source: sanity/queries/query.ts
+// Variable: MY_ORDERS_QUERY
+// Query: *[_type == "order" && clerkUserId ==$userId] | order(orderData desc){      ...,      products[]{      ..., products->}      }
+export type MY_ORDERS_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "order";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  orderNumber?: string;
+  invoice?: {
+    id?: string;
+    number?: string;
+    hosted_invoice_url?: string;
+  };
+  stripeCheckoutSessionId?: string;
+  stripeCustomerId?: string;
+  clerkUserId?: string;
+  clerkPaymentId?: string;
+  clerkPaymentStatus?: string;
+  customerName?: string;
+  email?: string;
+  stripePaymentIntentId?: string;
+  products: Array<{
+    product?: ProductReference;
+    quantity?: number;
+    _key: string;
+    products: null;
+  }> | null;
+  subtotal?: number;
+  tax?: number;
+  shipping?: number;
+  totalPrice?: number;
+  currency?: string;
+  amountDiscount?: number;
+  address?: {
+    state?: string;
+    zip?: string;
+    city?: string;
+    address?: string;
+    name?: string;
+  };
+  status?:
+    | "address_confirmed"
+    | "cancelled"
+    | "completed"
+    | "delivered"
+    | "failed_delivery"
+    | "order_confirmed"
+    | "out_for_delivery"
+    | "packed"
+    | "pending"
+    | "ready_for_delivery"
+    | "rescheduled";
+  orderDate?: string;
+  paymentStatus?: "cancelled" | "failed" | "paid" | "pending";
+  paymentMethod?: "card" | "cash_on_delivery" | "clerk" | "stripe";
+  addressConfirmedBy?: string;
+  addressConfirmedAt?: string;
+  orderConfirmedBy?: string;
+  orderConfirmedAt?: string;
+  packedBy?: string;
+  packedAt?: string;
+  packingNotes?: string;
+  assignedWarehouseBy?: string;
+  assignedWarehouseAt?: string;
+  dispatchedBy?: string;
+  dispatchedAt?: string;
+  assignedDeliverymanId?: string;
+  assignedDeliverymanName?: string;
+  deliveredBy?: string;
+  deliveredAt?: string;
+  deliveryNotes?: string;
+  deliveryAttempts?: number;
+  rescheduledDate?: string;
+  rescheduledReason?: string;
+  cashCollected?: boolean;
+  cashCollectedAmount?: number;
+  cashCollectedAt?: string;
+  cashSubmittedToAccounts?: boolean;
+  cashSubmittedBy?: string;
+  cashSubmittedAt?: string;
+  cashSubmissionNotes?: string;
+  assignedAccountsEmployeeId?: string;
+  assignedAccountsEmployeeName?: string;
+  cashSubmissionStatus?: "confirmed" | "not_submitted" | "pending" | "rejected";
+  cashSubmissionRejectionReason?: string;
+  paymentReceivedBy?: string;
+  paymentReceivedAt?: string;
+  cancellationRequested?: boolean;
+  cancellationRequestedAt?: string;
+  cancellationRequestReason?: string;
+  cancelledAt?: string;
+  cancelledBy?: string;
+  cancellationReason?: string;
+  amountPaid?: number;
+  refundedToWallet?: boolean;
+  refundAmount?: number;
+  statusHistory?: Array<{
+    status?: string;
+    changedBy?: string;
+    changedByRole?:
+      | "accounts"
+      | "admin"
+      | "callcenter"
+      | "deliveryman"
+      | "incharge"
+      | "packer"
+      | "system"
+      | "warehouse";
+    changedAt?: string;
+    notes?: string;
+    _key: string;
+  }>;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -665,5 +781,6 @@ declare module "@sanity/client" {
     '*[_type == "product" && status == "hot"] | order(name asc){\n    ..., "categories": categories[]->title\n    }': DEAL_PRODUCTS_RESULT;
     '*[_type == "product" && slug.current == $slug] | order(name asc) [0]': PRODUCT_BY_SLUG_QUERY_RESULT;
     '*[_type == "product" && slug.current == $slug]{\n    "brandName": brand->title\n    } ': BRAND_QUERY1_RESULT;
+    '*[_type == "order" && clerkUserId ==$userId] | order(orderData desc){\n      ...,\n      products[]{\n      ..., products->}\n      }': MY_ORDERS_QUERY_RESULT;
   }
 }

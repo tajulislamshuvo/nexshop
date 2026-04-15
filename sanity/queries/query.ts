@@ -23,4 +23,11 @@ const LATEST_BLOG_QUERY = defineQuery(`*[_type == "blog" && isLatest == true] | 
     "brandName": brand->title
     } `)
 
-export {BRAND_QUERY, LATEST_BLOG_QUERY, DEAL_PRODUCTS, PRODUCT_BY_SLUG_QUERY, BRAND_QUERY1}
+
+    const MY_ORDERS_QUERY = defineQuery(`*[_type == "order" && clerkUserId ==$userId] | order(orderData desc){
+      ...,
+      products[]{
+      ..., products->}
+      }`)
+
+export {BRAND_QUERY, LATEST_BLOG_QUERY, DEAL_PRODUCTS, PRODUCT_BY_SLUG_QUERY, BRAND_QUERY1, MY_ORDERS_QUERY}
