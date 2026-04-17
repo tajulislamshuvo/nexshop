@@ -29,6 +29,7 @@ Stripe Payment Gateway
 State Management
 Zustand (Cart & global state)
 📁 Project Structure
+
 nexshop/
 ├── app/
 │ ├── (client)/
@@ -130,7 +131,7 @@ Auto CI/CD from GitHub
 📸 Screenshots
 
 <p align="center">
-  <img src="/images/nexshop-home.png" width="600" />
+  <img src="/images/nexshop-home.png" width="300"/>
 </p>
 
 🔥 Future Improvements
