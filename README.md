@@ -1,36 +1,144 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🛒 NexShop
 
-## Getting Started
+Live Demo: https://nexshop-lyart.vercel.app
 
-First, run the development server:
+NexShop is a modern full-stack eCommerce web application built with Next.js, Clerk authentication, Stripe payments, and Sanity CMS. It provides a fast, secure, and scalable shopping experience with real-time cart management and order tracking.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🚀 Features
+🔐 Authentication with Clerk (Sign in / Sign up / User management)
+🛍️ Product listing with dynamic CMS (Sanity)
+🛒 Cart system with Zustand state management
+💳 Secure Stripe payment integration
+📦 Order tracking system
+❤️ Wishlist / Favourite products
+🔍 Search functionality
+📱 Fully responsive UI (mobile-first design)
+⚡ Fast performance with Next.js App Router
+☁️ Deployed on Vercel
+🧰 Tech Stack
+Frontend
+Next.js (App Router)
+React.js
+Tailwind CSS
+Lucide Icons
+Framer Motion
+Backend / Services
+Sanity CMS (Product & content management)
+Clerk Authentication
+Stripe Payment Gateway
+State Management
+Zustand (Cart & global state)
+📁 Project Structure
+nexshop/
+├── app/
+│ ├── (client)/
+│ ├── success/
+│ ├── orders/
+│ ├── shop/
+├── components/
+│ ├── Header.tsx
+│ ├── CartIcon.tsx
+│ ├── FavouriteButton.tsx
+│ ├── SignIn.tsx
+├── store/
+│ ├── index.ts
+├── sanity/
+│ ├── lib/
+│ ├── queries/
+├── lib/
+├── public/
+├── styles/
+⚙️ Environment Variables
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a .env.local file and add:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
+CLERK_SECRET_KEY=your_clerk_secret
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_sanity_project_id
+NEXT_PUBLIC_SANITY_DATASET=production
 
-## Learn More
+STRIPE_SECRET_KEY=your_stripe_secret
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_public_key
 
-To learn more about Next.js, take a look at the following resources:
+SANITY_API_READ_TOKEN=your_sanity_token
+🛠️ Installation & Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone the repository
+   git clone https://github.com/tajulislamshuvo/nexshop
+   cd nexshop
+2. Install dependencies
+   npm install
+3. Run development server
+   npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+App runs at:
 
-## Deploy on Vercel
+http://localhost:3000
+💳 Stripe Payment Flow
+User adds products to cart
+Proceeds to checkout
+Stripe Checkout session is created
+User completes payment
+Redirected to /success
+Order is saved & cart is cleared
+🧠 Key Features Explained
+🛒 Cart System
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Built using Zustand, allowing:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Add / remove products
+Quantity update
+Persistent state
+🔐 Authentication
+
+Powered by Clerk:
+
+Secure login/signup
+User session handling
+Protected routes (orders, checkout)
+🗂️ CMS
+
+Products are managed using Sanity:
+
+Real-time product updates
+Category-based filtering
+Scalable content structure
+💳 Payments
+
+Handled via Stripe:
+
+Secure checkout sessions
+Webhook support (order confirmation)
+Payment success redirect
+📦 Pages Overview
+Page Description
+/ Home page with featured products
+/shop Product listing page
+/product/[slug] Product details
+/cart Cart management
+/success Payment success page
+/orders User order history
+🧪 Build & Deployment
+Build for production:
+npm run build
+Start production server:
+npm start
+Deploy:
+Hosted on Vercel
+Auto CI/CD from GitHub
+📸 Screenshots
+
+<p align="center">
+  <img src="/images/nexshop-home.png" width="600" />
+</p>
+
+🔥 Future Improvements
+AI product recommendations
+Admin dashboard
+Order tracking with courier API (Bangladesh integration)
+Email notifications
+Coupon / discount system
+🤝 Contributing
+
+Pull requests are welcome. For major changes, please open an issue first.
