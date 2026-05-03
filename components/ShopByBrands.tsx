@@ -34,7 +34,6 @@ const extraData = [
 
 const ShopByBrands = async() => {
   const brands:Brand[] = await getAllBrands();
-  console.log(brands)
   return (
     <div className='mb-10 bg-shop_light_bg lg:mb-20 lg:p-7 p-5 rounded-md'>
       <div className='flex items-center gap-5 justify-between mb-10'>

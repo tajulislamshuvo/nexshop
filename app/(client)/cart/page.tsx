@@ -87,7 +87,6 @@ const handleCheckout = async() =>{
     if(checkoutUrl){
       window.location.href = checkoutUrl
     }
-    console.log("Stripe checkout url------",checkoutUrl)
   } catch (error) {
     console.log("Error creating checkout session", error)
   }finally{

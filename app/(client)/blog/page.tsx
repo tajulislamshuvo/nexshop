@@ -11,7 +11,7 @@ import React from 'react'
 
 const Blogpage = async() => {
   const blogs:Blog[] = await getAllBlogs(6);
-  console.log(blogs);
+
   
   
   return (

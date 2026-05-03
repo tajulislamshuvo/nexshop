@@ -10,7 +10,6 @@ import dayjs from "dayjs"
 
 const LatestBlog = async() => {
   const blogs:Blog[] = await getLatestBlogs()
-  console.log(blogs)
   return (
     <div className='mb-10 lg:mb-20'>
       <Title className='text-xl md:text-3xl'>Latest Blog</Title>

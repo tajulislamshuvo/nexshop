@@ -7,7 +7,6 @@ import React from 'react'
 const categoryPage = async({params} : {params: Promise<{slug:string}>}) => {
   const {slug} = await params;
   const categories = await getCategories()
-  console.log(categories)
   return (
     <div className='py-10'>
       <Container>

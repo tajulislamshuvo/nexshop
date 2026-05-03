@@ -6,7 +6,6 @@ import React from 'react'
 
 const HeaderMenu = () => {
   const pathName = usePathname();
-  console.log(pathName)
   return (
 
 

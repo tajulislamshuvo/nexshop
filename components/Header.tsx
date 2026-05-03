@@ -16,7 +16,6 @@ import HeaderAuth from './HeaderAuth'
 
 const Header = async() => {
   const user = await currentUser();
-  console.log(user)
   const {userId} = await auth();
   let orders = null;
   if(userId){

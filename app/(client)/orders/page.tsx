@@ -17,7 +17,6 @@ const OrdersPage = async() => {
     return redirect("/");
   }
   const orders = await getMyOrders(userId);
-  console.log(orders)
   return (
     <div>
       <Container className='py-10'>

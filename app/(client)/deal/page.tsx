@@ -7,7 +7,6 @@ import React from 'react'
 
 const DealPage = async() => {
   const products:Product[] = await getDealProducts(); 
-  console.log(products)
   return (
     <div className='py-10 bg-deal-bg'>
       <Container>

@@ -18,7 +18,6 @@ const WishListProduct = () => {
   const loadMore = () =>{
     setVisibleProduct((prev)=> Math.min(prev + 5, favoriteProduct?.length))
   }
-  console.log(favoriteProduct)
 
   const handleResetWishlist = () =>{
     const confirmReset = window.confirm("Are you sure you want to reset your wishlist?");

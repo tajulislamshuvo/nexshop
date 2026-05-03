@@ -28,6 +28,7 @@ Clerk Authentication
 Stripe Payment Gateway
 State Management
 Zustand (Cart & global state)
+
 📁 Project Structure
 
 nexshop/
